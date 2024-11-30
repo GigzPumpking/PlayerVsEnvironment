@@ -16,6 +16,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     private CanvasGroup canvasGroup;
     private Vector3 startPos;
     private bool isDraggable;//drag toggle
+    Vector3 DragOffset;
 
     private void Awake()
     {
@@ -37,6 +38,13 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         }
         UnityEngine.Debug.Log("dragging");
         startPos = transform.position;
+        Vector3 globalMousePos;
+        if (RectTransformUtility.ScreenPointToWorldPointInRectangle(
+            canvas.transform as RectTransform, eventData.position,
+            eventData.pressEventCamera, out globalMousePos))
+        {
+            DragOffset = rectTransform.position - globalMousePos;
+        }
     }
     public void setDraggable(bool draggable)
     {
@@ -57,7 +65,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             canvas.transform as RectTransform, eventData.position,
             eventData.pressEventCamera, out globalMousePos))
         {
-            rectTransform.position = globalMousePos;
+            rectTransform.position = globalMousePos + DragOffset;
         }
 
     }
