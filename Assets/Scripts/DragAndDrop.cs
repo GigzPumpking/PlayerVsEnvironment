@@ -76,7 +76,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         {
             canvasGroup.blocksRaycasts = true;
         }
-        transform.position = startPos;
+        //transform.position = startPos;
 
     }
 
