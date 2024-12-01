@@ -25,6 +25,14 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         canvasGroup = GetComponent<CanvasGroup>();//used to block raycasts during the drag.  Needed if prevent blocking pointer events
         startPos = transform.position;
     }
+
+    private void OnEnable()
+    {
+        if (canvas == null && GameManager.Instance != null) {
+            canvas = GameManager.Instance.GetObjectCanvas();
+        }
+    }
+
     public void OnBeginDrag(PointerEventData eventData)
     {
         if (!isDraggable)
