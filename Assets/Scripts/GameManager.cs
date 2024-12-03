@@ -6,6 +6,8 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private Canvas objectCanvas;
 
+    [SerializeField] private GameObject player;
+
     private void Awake()
     {
         // Ensure there's only one GameManager instance
@@ -23,5 +25,15 @@ public class GameManager : MonoBehaviour
     public Canvas GetObjectCanvas()
     {
         return objectCanvas;
+    }
+
+    public GameObject GetPlayer()
+    {
+        return player;
+    }
+
+    public void SetPlayer(GameObject player)
+    {
+        this.player = player;
     }
 }
