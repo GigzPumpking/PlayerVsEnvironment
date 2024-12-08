@@ -6,6 +6,16 @@ public class Health : MonoBehaviour
     private Transform healthBar;
     private Animator m_animator;
 
+    [SerializeField]
+    private SFXClip[] m_hurtSounds;
+
+    private AudioSource m_audioSource;
+
+    private void Awake()
+    {
+        m_audioSource = GetComponent<AudioSource>();
+    }
+
     void Start()
     {
         healthBar = transform.Find("HealthBar");
@@ -19,10 +29,11 @@ public class Health : MonoBehaviour
         if(health <= 0)
         {
             health = 0;
-            if(transform.CompareTag("Player"))
+            if (transform.CompareTag("Player"))
             {
                 m_animator.SetTrigger("Death");
                 GetComponent<HeroKnight>().enabled = false;
+                GameManager.Instance.GameEnd(false);
             }
             else
             {
@@ -35,6 +46,12 @@ public class Health : MonoBehaviour
         }
 
         UpdateHealthBar();
+
+        if (m_audioSource != null && m_hurtSounds != null)
+        {
+            // Play a random hurt sound
+            m_audioSource.Play(m_hurtSounds[Random.Range(0, m_hurtSounds.Length)]);
+        }
     }
 
     private void UpdateHealthBar()

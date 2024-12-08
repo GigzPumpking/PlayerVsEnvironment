@@ -8,6 +8,10 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private GameObject player;
 
+    [SerializeField] private Transform spawnPoint;
+
+    private bool gameState = true;
+
     private void Awake()
     {
         // Ensure there's only one GameManager instance
@@ -20,6 +24,11 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+    }
+
+    public Transform GetSpawnPoint()
+    {
+        return spawnPoint;
     }
 
     public Canvas GetObjectCanvas()
@@ -35,5 +44,49 @@ public class GameManager : MonoBehaviour
     public void SetPlayer(GameObject player)
     {
         this.player = player;
+    }
+
+    public bool GetGameState()
+    {
+        return gameState;
+    }
+
+    public void SetGameState(bool gameState)
+    {
+        this.gameState = gameState;
+
+        if (gameState)
+        {
+            Time.timeScale = 1;
+        }
+        else
+        {
+            Time.timeScale = 0;
+        }
+    }
+
+    public void GameEnd(bool playerWin)
+    {
+        SetGameState(false);
+
+        if (UIManager.Instance == null)
+        {
+            Debug.LogError("UIManager instance is null");
+            return;
+        }
+
+        if (playerWin)
+        {
+            UIManager.Instance.ShowPlayerWinPanel();
+        }
+        else
+        {
+            UIManager.Instance.ShowEnvironmentWinPanel();
+        }
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

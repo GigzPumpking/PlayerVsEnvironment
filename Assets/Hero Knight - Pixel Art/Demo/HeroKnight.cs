@@ -23,6 +23,18 @@ public class HeroKnight : MonoBehaviour {
     private int                 m_currentAttack = 0;
     private float               m_timeSinceAttack = 0.0f;
 
+    private AudioSource         m_audioSource;
+
+    [SerializeField]
+    private SFXClip[] m_swordSwingSounds;
+
+    [SerializeField]
+    private SFXClip m_jumpSound;
+
+    void Awake()
+    {
+        m_audioSource = GetComponent<AudioSource>();
+    }
 
     // Use this for initialization
     void Start ()
@@ -34,11 +46,23 @@ public class HeroKnight : MonoBehaviour {
         m_wallSensorR2 = transform.Find("WallSensor_R2").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL1 = transform.Find("WallSensor_L1").GetComponent<Sensor_HeroKnight>();
         m_wallSensorL2 = transform.Find("WallSensor_L2").GetComponent<Sensor_HeroKnight>();
+
+        Vector3 spawnPos = GameManager.Instance.GetSpawnPoint().position;
+
+        if (spawnPos != null)
+        {
+            transform.position = spawnPos;
+        }
     }
 
     // Update is called once per frame
     void Update ()
     {
+        if (!GameManager.Instance.GetGameState())
+        {
+            return;
+        }
+        
         // Increase timer that controls attack combo
         m_timeSinceAttack += Time.deltaTime;
 
@@ -128,6 +152,12 @@ public class HeroKnight : MonoBehaviour {
             // Call one of three attack animations "Attack1", "Attack2", "Attack3"
             m_animator.SetTrigger("Attack" + m_currentAttack);
 
+            // Play the sword swing sound clip depending on current attack
+            if (m_swordSwingSounds.Length > m_currentAttack - 1)
+            {
+                m_audioSource.Play(m_swordSwingSounds[m_currentAttack - 1]);
+            }
+
             // Reset timer
             m_timeSinceAttack = 0.0f;
         }
@@ -135,6 +165,7 @@ public class HeroKnight : MonoBehaviour {
         //Jump
         else if (Input.GetKeyDown("space") && m_grounded)
         {
+            m_audioSource.Play(m_jumpSound);
             m_animator.SetTrigger("Jump");
             m_grounded = false;
             m_animator.SetBool("Grounded", m_grounded);
