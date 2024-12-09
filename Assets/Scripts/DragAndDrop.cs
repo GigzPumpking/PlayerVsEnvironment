@@ -11,12 +11,23 @@ using UnityEngine.Rendering;
 //Multiple Handlers needed to allow Unity style dragging
 public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler, IEndDragHandler, IDragHandler, IPointerUpHandler
 {
-    [SerializeField] private Canvas canvas;
+    [SerializeField] public Canvas canvas;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
     private Vector3 startPos;
     private bool isDraggable;//drag toggle
     Vector3 DragOffset;
+    public bool isBeingDragged = false;
+    public Vector3 targetPos;
+    public Vector3 lastTargetPos;
+    public Vector3 dragVelocity;
+
+    private void SetTargetPos(Vector3 pos)
+    {
+        lastTargetPos = targetPos;
+        targetPos = pos;
+        dragVelocity = targetPos - lastTargetPos;
+    }
 
     private void Awake()
     {
@@ -24,6 +35,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
         rectTransform = GetComponent<RectTransform>();
         canvasGroup = GetComponent<CanvasGroup>();//used to block raycasts during the drag.  Needed if prevent blocking pointer events
         startPos = transform.position;
+        targetPos = transform.position;
     }
 
     private void OnEnable()
@@ -35,6 +47,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
+        isBeingDragged = true;
         if (!isDraggable)
         {
             eventData.pointerDrag = null;
@@ -60,6 +73,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     }
     public void OnDrag(PointerEventData eventData)
     {
+        isBeingDragged = true;
         if (!isDraggable)
         {
             return;
@@ -73,13 +87,16 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             canvas.transform as RectTransform, eventData.position,
             eventData.pressEventCamera, out globalMousePos))
         {
-            rectTransform.position = globalMousePos + DragOffset;
+            //rectTransform.position = globalMousePos + DragOffset;
+            SetTargetPos(globalMousePos + DragOffset);
         }
 
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
+        isBeingDragged = false;
+        targetPos = transform.position;
         if (canvasGroup != null)
         {
             canvasGroup.blocksRaycasts = true;
@@ -99,9 +116,11 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     }
     public void OnPointerUp(PointerEventData eventData)
     {
+        targetPos = transform.position;
+        isBeingDragged = false;
         if (!isDraggable)
         {
-            transform.position = startPos;
+            //transform.position = startPos;
             return;
         }
     }

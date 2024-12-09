@@ -58,7 +58,7 @@ public class HeroKnight : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-        if (!GameManager.Instance.GetGameState())
+        if (!GameManager.Instance || !GameManager.Instance.GetGameState())
         {
             return;
         }
