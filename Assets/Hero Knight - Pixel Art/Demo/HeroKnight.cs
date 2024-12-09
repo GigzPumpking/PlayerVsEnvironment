@@ -56,13 +56,13 @@ public class HeroKnight : MonoBehaviour {
     }
 
     // Update is called once per frame
-    void Update ()
+    void Update()
     {
         if (!GameManager.Instance || !GameManager.Instance.GetGameState())
         {
             return;
         }
-        
+
         // Increase timer that controls attack combo
         m_timeSinceAttack += Time.deltaTime;
 
@@ -90,7 +90,7 @@ public class HeroKnight : MonoBehaviour {
             m_facingDirection = 1;
             m_animator.SetBool("Moving", true);
         }
-            
+
         else if (inputX < 0)
         {
             GetComponent<SpriteRenderer>().flipX = true;
@@ -103,7 +103,7 @@ public class HeroKnight : MonoBehaviour {
         }
 
         // Move
-        if(!m_animator.GetBool("WallSlide") && m_timeSinceAttack > 0.25f)
+        if ((!(m_wallSensorR1.State() && m_wallSensorR2.State()) && inputX > 0) || (!(m_wallSensorL1.State() && m_wallSensorL2.State()) && inputX < 0) && m_timeSinceAttack > 0.25f)
         {
             m_body2d.linearVelocity = new Vector2(inputX * m_speed, m_body2d.linearVelocity.y);
         }
@@ -113,7 +113,11 @@ public class HeroKnight : MonoBehaviour {
 
         // -- Handle Animations --
         //Wall Slide
-        m_isWallSliding = (m_wallSensorR1.State() && m_wallSensorR2.State()) || (m_wallSensorL1.State() && m_wallSensorL2.State());
+        m_isWallSliding = (m_wallSensorR1.State() && m_wallSensorR2.State() && m_body2d.linearVelocity.x >= 0) || (m_wallSensorL1.State() && m_wallSensorL2.State() && m_body2d.linearVelocity.x <= 0);
+        if (m_grounded)
+        {
+            m_isWallSliding = false;
+        }
         m_animator.SetBool("WallSlide", m_isWallSliding);
 
         //Attack

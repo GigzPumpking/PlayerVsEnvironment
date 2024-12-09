@@ -104,6 +104,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   canvas: {fileID: 0}
   isBeingDragged: 0
+  targetPos: {x: 0, y: 0}
+  lastTargetPos: {x: 0, y: 0}
+  dragVelocity: {x: 0, y: 0}
 --- !u!212 &3630870467161533914
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -291,7 +294,7 @@ Rigidbody2D:
     m_Bits: 0
   m_Interpolate: 0
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &6148339437015231455
 BoxCollider2D:
@@ -351,8 +354,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 094f0a27b72351f4098985dd9441e716, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  canvas: {fileID: 0}
-  isBeingDragged: 0
   DragObject: {fileID: 2144240545935394772}
 --- !u!1001 &9092629278380720762
 PrefabInstance:

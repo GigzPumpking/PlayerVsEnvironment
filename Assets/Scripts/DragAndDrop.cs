@@ -14,13 +14,13 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
     [SerializeField] public Canvas canvas;
     private RectTransform rectTransform;
     private CanvasGroup canvasGroup;
-    private Vector3 startPos;
+    private Vector2 startPos;
     private bool isDraggable;//drag toggle
     Vector3 DragOffset;
     public bool isBeingDragged = false;
-    public Vector3 targetPos;
-    public Vector3 lastTargetPos;
-    public Vector3 dragVelocity;
+    public Vector2 targetPos;
+    public Vector2 lastTargetPos;
+    public Vector2 dragVelocity;
 
     private void SetTargetPos(Vector3 pos)
     {

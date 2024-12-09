@@ -4,7 +4,9 @@ public class EnemyBase : MonoBehaviour
 {
     [SerializeField]
     DragAndDrop DragObject;
-    public bool justReleased = false;
+
+    private bool justReleased = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -19,20 +21,29 @@ public class EnemyBase : MonoBehaviour
             if (DragObject.isBeingDragged)
             {
                 justReleased = true;
-                Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
-                tmpRigidbody2D.linearVelocity = Vector2.zero;
-                tmpRigidbody2D.position = DragObject.targetPos;
+                DraggedOnPoint(DragObject.targetPos);
             }
             else
             {
                 if (justReleased)
                 {
-                    Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
-                    tmpRigidbody2D.linearVelocity = DragObject.dragVelocity * 500f;
-                    print(DragObject.dragVelocity * 500f);
+                    OnReleased(DragObject.dragVelocity);
                 }
                 justReleased = false;
             }
         }
+    }
+
+    void DraggedOnPoint(Vector2 targetPos)
+    {
+        Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
+        tmpRigidbody2D.linearVelocity = Vector2.zero;
+        tmpRigidbody2D.MovePosition(targetPos);
+    }
+
+    void OnReleased(Vector2 releaseVelocity)
+    {
+        Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
+        tmpRigidbody2D.linearVelocity = releaseVelocity * 500f;
     }
 }
