@@ -12,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     private bool gameState = true;
 
+    [SerializeField] private bool _debug = false;
+
     private void Awake()
     {
         // Ensure there's only one GameManager instance
@@ -23,6 +25,17 @@ public class GameManager : MonoBehaviour
         else
         {
             Destroy(gameObject);
+        }
+    }
+
+    private void Update()
+    {
+        if (_debug)
+        {
+            if (Input.GetKeyDown(KeyCode.R))
+            {
+                player.transform.position = spawnPoint.position;
+            }
         }
     }
 
