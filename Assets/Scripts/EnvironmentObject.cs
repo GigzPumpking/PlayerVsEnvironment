@@ -112,7 +112,6 @@ public class EnvironmentObject : MonoBehaviour
         // The position should not consider the z-axis
         Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         position.z = 0.0f;
-
         GameObject obj = Instantiate(objectPrefab, position, Quaternion.identity, GameManager.Instance.GetObjectCanvas().transform);
 
         if (obj == null)
