@@ -3,11 +3,12 @@ using System.Collections;
 
 public class HeroKnight : MonoBehaviour {
 
-    [SerializeField] float      m_speed = 4.0f;
+    [SerializeField] public float      m_speed = 4.0f;
     [SerializeField] float      m_jumpForce = 7.5f;
     [SerializeField] int        damagePower;
     [SerializeField] float      attackRange = 2f;
     [SerializeField] LayerMask  enemyLayer;
+    [SerializeField] LayerMask enemyLayer2;
     [SerializeField] GameObject m_slideDust;
 
     private Animator            m_animator;
@@ -105,7 +106,15 @@ public class HeroKnight : MonoBehaviour {
         // Move
         if ((!(m_wallSensorR1.State() && m_wallSensorR2.State()) && inputX > 0) || (!(m_wallSensorL1.State() && m_wallSensorL2.State()) && inputX < 0) && m_timeSinceAttack > 0.25f)
         {
-            m_body2d.linearVelocity = new Vector2(inputX * m_speed, m_body2d.linearVelocity.y);
+            if(m_body2d.linearVelocity.x < inputX * m_speed)
+            {
+                m_body2d.AddForceX(5);
+            }
+            else if (m_body2d.linearVelocity.x > inputX * m_speed)
+            {
+                m_body2d.AddForceX(-5);
+            }
+            //m_body2d.linearVelocity = new Vector2(inputX * m_speed, m_body2d.linearVelocity.y);
         }
 
         //Set AirSpeed in animator
@@ -123,12 +132,21 @@ public class HeroKnight : MonoBehaviour {
         //Attack
         if(Input.GetKeyDown("left shift") && m_grounded && m_timeSinceAttack > 0.25f)
         {
-            m_body2d.linearVelocity = new Vector2(0f, m_body2d.linearVelocity.y);
+            if (m_body2d.linearVelocity.x < 0)
+            {
+                m_body2d.AddForceX(7);
+            }
+            else if (m_body2d.linearVelocity.x > 0)
+            {
+                m_body2d.AddForceX(-7);
+            }
+            //m_body2d.linearVelocity = new Vector2(0f, m_body2d.linearVelocity.y);
             // Define the direction of the ray
             Vector2 rayDirection = new Vector2(m_facingDirection, 0f);
 
             // Cast a ray to detect enemies
             RaycastHit2D objectHit = Physics2D.Raycast(transform.position + new Vector3(0f, 0.5f, 0f), rayDirection, attackRange, enemyLayer);
+            RaycastHit2D objectHit2 = Physics2D.Raycast(transform.position + new Vector3(0f, 0.5f, 0f), rayDirection, attackRange, enemyLayer2);
 
             // Visualize the ray
             // Debug.DrawRay(transform.position + new Vector3(0f, 0.5f, 0f), rayDirection * attackRange, Color.green, 3f);
@@ -140,6 +158,14 @@ public class HeroKnight : MonoBehaviour {
                 {
                     // Damage the enemy
                     objectHit.collider.GetComponent<Health>()?.TakeDamage(damagePower);
+                }
+            }
+            if (objectHit2.collider != null)
+            {
+                if (objectHit2.collider.CompareTag("Enemy"))
+                {
+                    // Damage the enemy
+                    objectHit2.collider.GetComponent<Health>()?.TakeDamage(damagePower);
                 }
             }
 
