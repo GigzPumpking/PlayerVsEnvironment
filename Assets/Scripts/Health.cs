@@ -5,6 +5,7 @@ public class Health : MonoBehaviour
     public int health = 100;
     private Transform healthBar;
     private Animator m_animator;
+    [SerializeField] Vector3 relativePosition;
 
     [SerializeField]
     private SFXClip[] m_hurtSounds;

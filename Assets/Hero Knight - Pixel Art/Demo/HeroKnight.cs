@@ -12,11 +12,11 @@ public class HeroKnight : MonoBehaviour {
 
     private Animator            m_animator;
     private Rigidbody2D         m_body2d;
-    private Sensor_HeroKnight   m_groundSensor;
-    private Sensor_HeroKnight   m_wallSensorR1;
-    private Sensor_HeroKnight   m_wallSensorR2;
-    private Sensor_HeroKnight   m_wallSensorL1;
-    private Sensor_HeroKnight   m_wallSensorL2;
+    private Sensor   m_groundSensor;
+    private Sensor   m_wallSensorR1;
+    private Sensor   m_wallSensorR2;
+    private Sensor   m_wallSensorL1;
+    private Sensor   m_wallSensorL2;
     private bool                m_isWallSliding = false;
     private bool                m_grounded = false;
     private int                 m_facingDirection = 1;
@@ -41,11 +41,11 @@ public class HeroKnight : MonoBehaviour {
     {
         m_animator = GetComponent<Animator>();
         m_body2d = GetComponent<Rigidbody2D>();
-        m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor_HeroKnight>();
-        m_wallSensorR1 = transform.Find("WallSensor_R1").GetComponent<Sensor_HeroKnight>();
-        m_wallSensorR2 = transform.Find("WallSensor_R2").GetComponent<Sensor_HeroKnight>();
-        m_wallSensorL1 = transform.Find("WallSensor_L1").GetComponent<Sensor_HeroKnight>();
-        m_wallSensorL2 = transform.Find("WallSensor_L2").GetComponent<Sensor_HeroKnight>();
+        m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor>();
+        m_wallSensorR1 = transform.Find("WallSensor_R1").GetComponent<Sensor>();
+        m_wallSensorR2 = transform.Find("WallSensor_R2").GetComponent<Sensor>();
+        m_wallSensorL1 = transform.Find("WallSensor_L1").GetComponent<Sensor>();
+        m_wallSensorL2 = transform.Find("WallSensor_L2").GetComponent<Sensor>();
 
         Vector3 spawnPos = GameManager.Instance.GetSpawnPoint().position;
 

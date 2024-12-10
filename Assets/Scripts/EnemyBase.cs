@@ -14,7 +14,7 @@ public class EnemyBase : MonoBehaviour
     }
 
     // Update is called once per frame
-    void Update()
+    protected void Update()
     {
         if (DragObject != null)
         {
@@ -34,14 +34,14 @@ public class EnemyBase : MonoBehaviour
         }
     }
 
-    void DraggedOnPoint(Vector2 targetPos)
+    protected void DraggedOnPoint(Vector2 targetPos)
     {
         Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
         tmpRigidbody2D.linearVelocity = Vector2.zero;
         tmpRigidbody2D.MovePosition(targetPos);
     }
 
-    void OnReleased(Vector2 releaseVelocity)
+    protected void OnReleased(Vector2 releaseVelocity)
     {
         Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
         tmpRigidbody2D.linearVelocity = releaseVelocity * 500f;
