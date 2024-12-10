@@ -87,7 +87,7 @@ public class DragAndDrop : MonoBehaviour, IPointerDownHandler, IBeginDragHandler
             canvas.transform as RectTransform, eventData.position,
             eventData.pressEventCamera, out globalMousePos))
         {
-            //rectTransform.position = globalMousePos + DragOffset;
+            rectTransform.position = globalMousePos + DragOffset;
             SetTargetPos(globalMousePos + DragOffset);
         }
 
