@@ -74,7 +74,7 @@ public class EnvironmentObject : MonoBehaviour
                 Debug.Log($"{objectPrefab.name} activated.");
             }
 
-            bool success = ApplyObject();
+            bool success = objectPrefab != null ? true : false;
 
             if (!success)
             {
@@ -100,6 +100,47 @@ public class EnvironmentObject : MonoBehaviour
         }
     }
 
+    public bool ActivateObjectCheck()
+    {
+        // Check if the object is not on cooldown
+        if (!isOnCooldown)
+        {
+            if (debug)
+            {
+                Debug.Log($"{objectPrefab.name} activated.");
+            }
+
+            bool success = objectPrefab != null ? true : false;
+
+            if (!success)
+            {
+                if (debug)
+                {
+                    Debug.Log($"{objectPrefab.name} failed to apply.");
+                }
+
+                return false;
+            }
+
+            // Start the cooldown timer
+            cooldownTimer = cooldown;
+
+            // Indicate that the object is on cooldown
+            isOnCooldown = true;
+
+            // Show the black filter
+            if (fill != null)
+            {
+                fill.enabled = true;
+            }
+
+            return true;
+        } else
+        {
+            return false;
+        }
+    }
+
     private bool ApplyObject()
     {
         if (objectPrefab == null)
@@ -120,5 +161,10 @@ public class EnvironmentObject : MonoBehaviour
         }
         
         return true;
+    }
+
+    public GameObject GetObjectPrefab()
+    {
+        return objectPrefab;
     }
 }

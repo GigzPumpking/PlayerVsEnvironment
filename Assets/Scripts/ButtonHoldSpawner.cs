@@ -5,16 +5,35 @@ using UnityEngine.EventSystems;
 //ChatGPT was my friend in this.
 public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IDragHandler
 {
-    [SerializeField] private GameObject objectPrefab; // Prefab to spawn and drag
-    [SerializeField] private Canvas canvas;          // Reference to the canvas
+    private EnvironmentObject environmentObject; // Reference to the environment object
+    private GameObject objectPrefab; // Prefab to spawn and drag
+    private Canvas canvas;          // Reference to the canvas
     private GameObject spawnedObject;                // Reference to the currently spawned object
     private RectTransform spawnedRectTransform;      // RectTransform of the spawned object
     private bool isDragging = false;                 // Flag to track dragging state
 
+    private void Start()
+    {
+        // Get the environment object reference from the parent
+        environmentObject = GetComponentInParent<EnvironmentObject>();
+
+        objectPrefab = environmentObject.GetObjectPrefab();
+
+        // Get the canvas reference
+        canvas = GameManager.Instance.GetObjectCanvas();
+    }
+
     public void OnPointerDown(PointerEventData eventData)
     {
-        // Spawn the object at the cursor's position
-        SpawnObjectAtCursor(eventData);
+        if (environmentObject.ActivateObjectCheck())
+        {
+            if (objectPrefab == null) {
+                objectPrefab = environmentObject.GetObjectPrefab();
+            }
+
+            // Spawn the object at the cursor's position
+            SpawnObjectAtCursor(eventData);
+        }
     }
 
     public void OnPointerUp(PointerEventData eventData)
