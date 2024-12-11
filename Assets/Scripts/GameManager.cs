@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameManager : MonoBehaviour
 {
@@ -13,6 +14,8 @@ public class GameManager : MonoBehaviour
     private bool gameState = true;
 
     [SerializeField] private bool _debug = false;
+
+    private List<GameObject> enemies;
 
     private void Awake()
     {
@@ -101,5 +104,44 @@ public class GameManager : MonoBehaviour
     public void QuitGame()
     {
         Application.Quit();
+    }
+
+    public void RestartGame()
+    {
+        SetGameState(true);
+        UIManager.Instance.HideWinUI();
+        player.transform.position = spawnPoint.position;
+
+        player.GetComponent<Health>().ResetHealth();
+
+        if (enemies != null)
+        {
+            RemoveAllEnemies();
+        }
+    }
+    
+    public void AppendEnemy(GameObject enemy)
+    {
+        if (enemies == null)
+        {
+            enemies = new List<GameObject>();
+        }
+
+        enemies.Add(enemy);
+    }
+
+    public void RemoveAllEnemies()
+    {
+        if (enemies == null)
+        {
+            return;
+        }
+
+        foreach (GameObject enemy in enemies)
+        {
+            Destroy(enemy);
+        }
+
+        enemies.Clear();
     }
 }

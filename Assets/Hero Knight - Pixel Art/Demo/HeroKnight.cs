@@ -58,6 +58,8 @@ public class HeroKnight : MonoBehaviour {
         {
             transform.position = spawnPos;
         }
+
+        m_animator.Play("Idle");
     }
 
     // Update is called once per frame

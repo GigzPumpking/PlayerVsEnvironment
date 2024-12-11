@@ -15,6 +15,8 @@ public class Health : MonoBehaviour
 
     private AudioSource m_audioSource;
 
+    private bool dead = false;
+
     private void Awake()
     {
         m_audioSource = GetComponent<AudioSource>();
@@ -97,15 +99,42 @@ public class Health : MonoBehaviour
 
     private void PlayerDead()
     {
+        if (dead)
+        {
+            return;
+        }
+
         if (transform.CompareTag("Player"))
         {
             m_animator.SetTrigger("Death");
             GetComponent<HeroKnight>().enabled = false;
-            GameManager.Instance.GameEnd(false);
+            // end game after 2 seconds
+            Invoke("PlayerDeadEndGame", 2f);
+
+            dead = true;
         }
         else
         {
             Destroy(transform.gameObject);
         }
+    }
+
+    public void ResetHealth()
+    {
+        health = 100;
+        dead = false;
+        UpdateHealthBar();
+
+        if (GetComponent<HeroKnight>() != null)
+        {
+            GetComponent<HeroKnight>().enabled = true;
+        }
+
+        m_animator.Play("Idle");
+    }
+
+    private void PlayerDeadEndGame()
+    {
+        GameManager.Instance.GameEnd(false);
     }
 }

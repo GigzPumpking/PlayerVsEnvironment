@@ -64,6 +64,8 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
 
         // Enable dragging
         isDragging = true;
+
+        GameManager.Instance.AppendEnemy(spawnedObject);
     }
 
     private void UpdateObjectPositionToCursor(PointerEventData eventData)

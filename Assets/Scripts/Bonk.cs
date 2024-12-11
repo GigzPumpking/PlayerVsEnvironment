@@ -19,8 +19,6 @@ public class Bonk : EnemyBase
         if (tmpDist < attackRange && timer <= 0)
         {
             timer = knockbackDelay;
-            // Damage the enemy
-            //Knight.GetComponent<Health>()?.TakeDamage(knockbackPower);
             tmpRigidbody2D.AddForce(((Knight.transform.position - transform.position) / tmpDist) * knockbackPower);
         }
         timer--;
