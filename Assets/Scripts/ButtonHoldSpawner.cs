@@ -12,6 +12,8 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
     private RectTransform spawnedRectTransform;      // RectTransform of the spawned object
     private bool isDragging = false;                 // Flag to track dragging state
 
+    [SerializeField] private LayerMask layerMask;    // Layer mask to filter raycasts
+
     private void Start()
     {
         // Get the environment object reference from the parent
