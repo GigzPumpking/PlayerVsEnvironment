@@ -97,8 +97,15 @@ public class Health : MonoBehaviour
 
     private void PlayerDead()
     {
-        m_animator.SetTrigger("Death");
-        GetComponent<HeroKnight>().enabled = false;
-        GameManager.Instance.GameEnd(false);
+        if (transform.CompareTag("Player"))
+        {
+            m_animator.SetTrigger("Death");
+            GetComponent<HeroKnight>().enabled = false;
+            GameManager.Instance.GameEnd(false);
+        }
+        else
+        {
+            Destroy(transform.gameObject);
+        }
     }
 }
