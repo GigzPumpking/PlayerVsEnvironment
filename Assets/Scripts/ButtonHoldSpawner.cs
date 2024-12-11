@@ -74,7 +74,14 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
             out cursorPosition))
         {
             // Update the object's anchored position to match the cursor
-            spawnedRectTransform.anchoredPosition = cursorPosition;
+            if (spawnedRectTransform)
+            {
+                spawnedRectTransform.anchoredPosition = cursorPosition;
+            }
+            else
+            {
+                spawnedObject.transform.position = cursorPosition;
+            }
         }
     }
 
