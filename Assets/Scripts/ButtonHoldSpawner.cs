@@ -11,6 +11,10 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
     private GameObject spawnedObject;                // Reference to the currently spawned object
     private RectTransform spawnedRectTransform;      // RectTransform of the spawned object
     private bool isDragging = false;                 // Flag to track dragging state
+    private Rigidbody2D objectRigidbody2D;               // Rigidbody of the spawned object
+    private MonoBehaviour enemyMovementScript;
+    private BoxCollider2D objectCollider;
+
 
     [SerializeField] private LayerMask layerMask;    // Layer mask to filter raycasts
 
@@ -58,7 +62,22 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
         // Instantiate the object prefab
         spawnedObject = Instantiate(objectPrefab, canvas.transform);
         spawnedRectTransform = spawnedObject.GetComponent<RectTransform>();
+        objectRigidbody2D = spawnedObject.GetComponent<Rigidbody2D>();
+        enemyMovementScript = spawnedObject.GetComponent<MonoBehaviour>();
+        objectCollider = spawnedObject.GetComponent<BoxCollider2D>();
 
+        // Disable collisions while dragging
+        if (objectCollider != null)
+        {
+            objectCollider.enabled = false;
+        }
+        if (objectRigidbody2D != null)
+        {
+            objectRigidbody2D.bodyType = RigidbodyType2D.Kinematic;
+            
+            objectRigidbody2D.angularVelocity = 0f;
+        }
+        DisableAllMonoScripts(spawnedObject);
         // Set the initial position to the cursor's position in canvas local space
         UpdateObjectPositionToCursor(eventData);
 
@@ -88,9 +107,35 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
             }
         }
     }
+    private void DisableAllMonoScripts(GameObject obj)
+    {
+        MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
+        foreach (var script in scripts)
+        {
+            script.enabled = false;
+        }
+    }
 
+    private void EnableAllMonoScripts(GameObject obj)
+    {
+        MonoBehaviour[] scripts = obj.GetComponents<MonoBehaviour>();
+        foreach (var script in scripts)
+        {
+            script.enabled = true;
+        }
+    }
     private void PlaceObject()
     {
+        if (objectRigidbody2D != null)
+        {
+            objectRigidbody2D.bodyType = RigidbodyType2D.Dynamic;
+        }
+
+        EnableAllMonoScripts(spawnedObject);
+        if (objectCollider != null)
+        {
+            objectCollider.enabled = true;
+        }
         // Stop dragging
         isDragging = false;
         spawnedObject = null;
