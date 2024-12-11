@@ -2,32 +2,51 @@ using UnityEngine;
 
 public class Web : EnemyBase
 {
+    [SerializeField] private float slowMultiplier = 0.7f;
+    [SerializeField] private float range = 3f;
 
-    [SerializeField] float drag = 0.7f;
-    [SerializeField] float dragWalk = 0.7f;
-    [SerializeField] float range = 3f;
-    int timer = 0;
+    private HeroKnight knight;
+    private bool isSlowing = false;
 
-    // Update is called once per frame
-    new void Update()
+    private void Start()
+    {
+        knight = FindFirstObjectByType<HeroKnight>();
+    }
+
+    private new void Update()
     {
         base.Update();
-        HeroKnight Knight = FindFirstObjectByType<HeroKnight>();
 
-        Rigidbody2D tmpRigidbody2D = Knight.GetComponentInParent<Rigidbody2D>();
-        Knight.m_speed = 4.0f;
-        float tmpDist = Vector3.Distance(Knight.gameObject.transform.position, gameObject.transform.position);
-        if (tmpDist < range)
+        if (knight == null)
         {
-            tmpRigidbody2D.linearVelocity = tmpRigidbody2D.linearVelocity * drag;
-            Knight.m_speed *= dragWalk;
-            //print("dragging: " + tmpDist + ", " + range);
-            //print("dragging: " + tmpRigidbody2D.linearVelocity);
+            return;
+        }
+
+        float distanceToKnight = Vector3.Distance(knight.transform.position, transform.position);
+
+        if (distanceToKnight < range)
+        {
+            if (!isSlowing)
+            {
+                isSlowing = true;
+                knight.AddSlowSource(slowMultiplier);
+            }
+        }
+        else
+        {
+            if (isSlowing)
+            {
+                isSlowing = false;
+                knight.RemoveSlowSource(slowMultiplier);
+            }
         }
     }
+
     private void OnDestroy()
     {
-        HeroKnight Knight = FindFirstObjectByType<HeroKnight>();
-        Knight.m_speed = 4.0f;
+        if (knight != null && isSlowing)
+        {
+            knight.RemoveSlowSource(slowMultiplier);
+        }
     }
 }

@@ -1,29 +1,83 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Floater : EnemyBase
 {
+    [SerializeField] private float speed = 5f;
+    [SerializeField] private float patrolRange = 5f;
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private int damagePower = 10;
+    [SerializeField] private float damageCooldown = 1f;
 
-    [SerializeField] float speed = 5;
-    [SerializeField] float attackRange = 2f;
-    [SerializeField] int damagePower;
-    [SerializeField] int damageDelay;
-    int timer = 0;
+    private Rigidbody2D rb;
+    private bool isMovingRight = true;
+    private Vector2 initialPosition;
+    private float damageTimer = 0f;
 
-    // Update is called once per frame
-    new void Update()
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+        initialPosition = transform.position;
+    }
+
+    private new void Update()
     {
         base.Update();
-        HeroKnight Knight = FindFirstObjectByType<HeroKnight>();
-        Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
-        float tmpDist = Vector3.Distance(Knight.transform.position, transform.position);
-        tmpRigidbody2D.AddForce((Knight.transform.position - transform.position) / tmpDist * speed);
-        if(tmpDist < attackRange && timer <= 0)
+        HandleMovement();
+        HandleDamageTimer();
+        CheckForAttack();
+    }
+
+    private void HandleMovement()
+    {
+        float offset = isMovingRight ? patrolRange : -patrolRange;
+        float targetX = initialPosition.x + offset;
+
+        // Change direction if the Floater reaches the patrol limit
+        if ((isMovingRight && transform.position.x >= targetX) || (!isMovingRight && transform.position.x <= targetX))
         {
-            timer = damageDelay;
-            // Damage the enemy
-            Knight.GetComponent<Health>()?.TakeDamage(damagePower);
+            isMovingRight = !isMovingRight;
         }
-        timer--;
+
+        // Apply horizontal movement
+        if (rb != null)
+        {
+            float direction = isMovingRight ? 1f : -1f;
+            rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+        }
+    }
+
+    private void HandleDamageTimer()
+    {
+        if (damageTimer > 0)
+        {
+            damageTimer -= Time.deltaTime;
+        }
+    }
+
+    private void CheckForAttack()
+    {
+        Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange);
+
+        foreach (Collider2D hit in hits)
+        {
+            if (hit.CompareTag("Player"))
+            {
+                Debug.Log("Hit Player: " + hit.name);
+
+                if (damageTimer <= 0)
+                {
+                    damageTimer = damageCooldown;
+                    Health playerHealth = hit.GetComponent<Health>();
+                    if (playerHealth != null)
+                    {
+                        playerHealth.TakeDamage(damagePower);
+                    }
+                }
+                break;
+            }
+        }
+
+        // Visualize the attack range in the editor
+        Debug.DrawLine(transform.position - Vector3.right * attackRange, transform.position + Vector3.right * attackRange, Color.red);
     }
 }

@@ -1,83 +1,87 @@
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class SimpleEnemy : EnemyBase
 {
-    [SerializeField] bool bMovingRight = true;
-    [SerializeField] float speed = 10;
-
-    [SerializeField] float attackRange = 2f;
-    [SerializeField] LayerMask enemyLayer;
-    [SerializeField] int damagePower;
-    [SerializeField] int damageDelay;
-
-    int timer = 0;
+    [SerializeField] private bool isMovingRight = true;
+    [SerializeField] private float speed = 10f;
+    [SerializeField] private float attackRange = 2f;
+    [SerializeField] private LayerMask enemyLayer;
+    [SerializeField] private int damagePower = 10;
+    [SerializeField] private float damageCooldown = 1f;
 
     [SerializeField] private Sensor leftFloorSensor;
     [SerializeField] private Sensor rightFloorSensor;
-    [SerializeField] private Sensor leftSensor;
-    [SerializeField] private Sensor rightSensor;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    [SerializeField] private Sensor leftWallSensor;
+    [SerializeField] private Sensor rightWallSensor;
+
+    private Rigidbody2D rb;
+    private float damageTimer = 0f;
+
+    private void Start()
     {
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
-    // Update is called once per frame
-    new void Update()
+    private new void Update()
     {
         base.Update();
-        if (rightSensor.State() || !rightFloorSensor.State())
+        HandleMovement();
+        HandleDamageTimer();
+        CheckForAttack();
+    }
+
+    private void HandleMovement()
+    {
+        // Check sensors to determine direction
+        if (rightWallSensor.State() || !rightFloorSensor.State())
         {
-            bMovingRight = false;
+            isMovingRight = false;
         }
-        if (leftSensor.State() || !leftFloorSensor.State())
+        if (leftWallSensor.State() || !leftFloorSensor.State())
         {
-            bMovingRight = true;
-        }
-        float m_facingDirection = 1f;
-        if (!bMovingRight)
-        {
-            m_facingDirection = -1f;
+            isMovingRight = true;
         }
 
-        Vector2 rayDirection = new Vector2(m_facingDirection, 0f);
+        // Apply movement
+        if (rb != null)
+        {
+            float direction = isMovingRight ? 1f : -1f;
+            rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+        }
+    }
 
-        // Cast a ray to detect enemies
-        RaycastHit2D objectHit = Physics2D.Raycast(transform.position, rayDirection, attackRange, enemyLayer);
-        // Visualize the ray
-        // Debug.DrawRay(transform.position + new Vector3(0f, 0.5f, 0f), rayDirection * attackRange, Color.green, 3f);
+    private void HandleDamageTimer()
+    {
+        if (damageTimer > 0)
+        {
+            damageTimer -= Time.deltaTime;
+        }
+    }
 
-        bool bInRange = false;
-        // If we hit something
-        if (objectHit.collider != null)
+    private void CheckForAttack()
+    {
+        float facingDirection = isMovingRight ? 1f : -1f;
+        Vector2 rayDirection = new Vector2(facingDirection, 0f);
+
+        // Cast a ray to detect the player
+        RaycastHit2D hit = Physics2D.Raycast(transform.position, rayDirection, attackRange, enemyLayer);
+
+        if (hit.collider != null && hit.collider.CompareTag("Player"))
         {
-            if (objectHit.collider.CompareTag("Player") && timer <= 0)
+            Debug.Log("Hit Player: " + hit.collider.name);
+
+            if (damageTimer <= 0)
             {
-                timer = damageDelay;
-                // Damage the enemy
-                objectHit.collider.GetComponent<Health>()?.TakeDamage(damagePower);
-            }
-            bInRange = true;
-        }
-        timer--;
-        if (!bInRange)
-        {
-            if (bMovingRight)
-            {
-                Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
-                tmpRigidbody2D.linearVelocityX = speed;
-            }
-            else
-            {
-                Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
-                tmpRigidbody2D.linearVelocityX = -speed;
+                damageTimer = damageCooldown;
+                Health playerHealth = hit.collider.GetComponent<Health>();
+                if (playerHealth != null)
+                {
+                    playerHealth.TakeDamage(damagePower);
+                }
             }
         }
-        else
-        {
-            Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
-            tmpRigidbody2D.linearVelocityX = 0f;
-        }
+
+        // Visualize the ray in the editor
+        Debug.DrawRay(transform.position, rayDirection * attackRange, Color.green);
     }
 }

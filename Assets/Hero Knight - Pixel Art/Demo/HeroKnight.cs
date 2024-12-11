@@ -1,9 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class HeroKnight : MonoBehaviour {
 
     [SerializeField] public float      m_speed = 4.0f;
+    [SerializeField] float      m_currentSpeed = 4.0f;
     [SerializeField] float      m_jumpForce = 7.5f;
     [SerializeField] int        damagePower;
     [SerializeField] float      attackRange = 2f;
@@ -31,6 +33,8 @@ public class HeroKnight : MonoBehaviour {
 
     [SerializeField]
     private SFXClip m_jumpSound;
+
+    private List<float> m_slowSources = new List<float>();
 
     void Awake()
     {
@@ -106,11 +110,11 @@ public class HeroKnight : MonoBehaviour {
         // Move
         if ((!(m_wallSensorR1.State() && m_wallSensorR2.State()) && inputX > 0) || (!(m_wallSensorL1.State() && m_wallSensorL2.State()) && inputX < 0) && m_timeSinceAttack > 0.25f)
         {
-            if(m_body2d.linearVelocity.x < inputX * m_speed)
+            if(m_body2d.linearVelocity.x < inputX * m_currentSpeed)
             {
                 m_body2d.AddForceX(5);
             }
-            else if (m_body2d.linearVelocity.x > inputX * m_speed)
+            else if (m_body2d.linearVelocity.x > inputX * m_currentSpeed)
             {
                 m_body2d.AddForceX(-5);
             }
@@ -202,6 +206,8 @@ public class HeroKnight : MonoBehaviour {
             m_body2d.linearVelocity = new Vector2(m_body2d.linearVelocity.x, m_jumpForce);
             m_groundSensor.Disable(0.2f);
         }
+
+        UpdateCurrentSpeed();
     }
 
     // Animation Events
@@ -222,5 +228,35 @@ public class HeroKnight : MonoBehaviour {
             // Turn arrow in correct direction
             dust.transform.localScale = new Vector3(m_facingDirection, 1, 1);
         }
+    }
+
+    public void AddSlowSource(float slowMultiplier)
+    {
+        m_slowSources.Add(slowMultiplier);
+        UpdateCurrentSpeed();
+    }
+
+    public void RemoveSlowSource(float slowMultiplier)
+    {
+        m_slowSources.Remove(slowMultiplier);
+        UpdateCurrentSpeed();
+    }
+
+    private void UpdateCurrentSpeed()
+    {
+        float effectiveMultiplier = 1f;
+
+        foreach (float multiplier in m_slowSources)
+        {
+            effectiveMultiplier *= multiplier;
+        }
+
+        m_currentSpeed = m_speed * effectiveMultiplier;
+    }
+
+    public void ResetSpeed()
+    {
+        m_slowSources.Clear();
+        m_currentSpeed = m_speed;
     }
 }

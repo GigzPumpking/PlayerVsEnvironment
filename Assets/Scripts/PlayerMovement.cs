@@ -4,11 +4,14 @@ using System.Collections;
 public class PlayerMovement : MonoBehaviour {
 
     [SerializeField] float      m_speed = 4.0f;
+
+                     float      m_currentSpeed = 4.0f;
     [SerializeField] float      m_jumpForce = 7.5f;
     [SerializeField] bool       m_noBlood = false;
     [SerializeField] GameObject m_slideDust;
 
     private Animator            m_animator;
+    private SpriteRenderer      m_spriteRenderer;
     private Rigidbody2D         m_body2d;
     private Sensor   m_groundSensor;
     private Sensor   m_wallSensorR1;
@@ -28,6 +31,7 @@ public class PlayerMovement : MonoBehaviour {
     {
         m_animator = GetComponent<Animator>();
         m_body2d = GetComponent<Rigidbody2D>();
+        m_spriteRenderer = GetComponent<SpriteRenderer>();
         m_groundSensor = transform.Find("GroundSensor").GetComponent<Sensor>();
         m_wallSensorR1 = transform.Find("WallSensor_R1").GetComponent<Sensor>();
         m_wallSensorR2 = transform.Find("WallSensor_R2").GetComponent<Sensor>();
@@ -63,18 +67,18 @@ public class PlayerMovement : MonoBehaviour {
         // Swap direction of sprite depending on walk direction
         if (inputX > 0)
         {
-            GetComponent<SpriteRenderer>().flipX = false;
+            m_spriteRenderer.flipX = false;
             m_facingDirection = 1;
         }
             
         else if (inputX < 0)
         {
-            GetComponent<SpriteRenderer>().flipX = true;
+            m_spriteRenderer.flipX = true;
             m_facingDirection = -1;
         }
 
         // Move
-        m_body2d.linearVelocity = new Vector2(inputX * m_speed, m_body2d.linearVelocity.y);
+        m_body2d.linearVelocity = new Vector2(inputX * m_currentSpeed, m_body2d.linearVelocity.y);
 
         //Set AirSpeed in animator
         m_animator.SetFloat("AirSpeedY", m_body2d.linearVelocity.y);
@@ -172,5 +176,15 @@ public class PlayerMovement : MonoBehaviour {
             // Turn arrow in correct direction
             dust.transform.localScale = new Vector3(m_facingDirection, 1, 1);
         }
+    }
+
+    public void ApplySlow(float slowMultiplier)
+    {
+        m_currentSpeed = m_speed * slowMultiplier;
+    }
+
+    public void ResetSpeed()
+    {
+        m_currentSpeed = m_speed;
     }
 }

@@ -417,7 +417,7 @@ GameObject:
   - component: {fileID: 6138817260140430665}
   - component: {fileID: 8109444932756044203}
   m_Layer: 0
-  m_Name: Image (1) 1
+  m_Name: DefaultDragObject
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
