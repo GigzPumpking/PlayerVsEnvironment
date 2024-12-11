@@ -17,6 +17,10 @@ public class GameManager : MonoBehaviour
 
     private List<GameObject> enemies;
 
+    [SerializeField] private SFXClip music;
+
+    private AudioSource audioSource;
+
     private void Awake()
     {
         // Ensure there's only one GameManager instance
@@ -29,6 +33,13 @@ public class GameManager : MonoBehaviour
         {
             Destroy(gameObject);
         }
+
+        audioSource = GetComponent<AudioSource>();
+    }
+
+    private void Start()
+    {
+        audioSource.Play(music);
     }
 
     private void Update()
@@ -118,6 +129,13 @@ public class GameManager : MonoBehaviour
         {
             RemoveAllEnemies();
         }
+
+        if (audioSource.isPlaying)
+        {
+            audioSource.Stop();
+        }
+
+        audioSource.Play(music);
     }
     
     public void AppendEnemy(GameObject enemy)
