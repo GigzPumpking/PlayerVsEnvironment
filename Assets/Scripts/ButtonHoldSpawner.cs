@@ -15,8 +15,9 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
     private MonoBehaviour enemyMovementScript;
     private BoxCollider2D objectCollider;
 
+    [SerializeField] private float spawnDistance = 3f; // Distance from the player to spawn the object
 
-    [SerializeField] private LayerMask layerMask;    // Layer mask to filter raycasts
+    private Color objectColor;
 
     private void Start()
     {
@@ -45,7 +46,18 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
     public void OnPointerUp(PointerEventData eventData)
     {
         // Stop dragging when the pointer is released
-        PlaceObject();
+        // if the object is too close to the player, don't place it
+        if (spawnedObject != null)
+        {
+            if (Vector2.Distance(spawnedObject.transform.position, GameManager.Instance.GetPlayer().transform.position) > spawnDistance)
+            {
+                PlaceObject();
+            }
+            else
+            {
+                Destroy(spawnedObject);
+            }
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
@@ -85,6 +97,8 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
         isDragging = true;
 
         GameManager.Instance.AppendEnemy(spawnedObject);
+
+        objectColor = spawnedObject.GetComponent<SpriteRenderer>().color;
     }
 
     private void UpdateObjectPositionToCursor(PointerEventData eventData)
@@ -105,6 +119,16 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
             {
                 spawnedObject.transform.position = cursorPosition;
             }
+        }
+
+        // if the object's position is too close to the player, set its alpha to 0.5
+        if (Vector2.Distance(spawnedObject.transform.position, GameManager.Instance.GetPlayer().transform.position) < spawnDistance)
+        {
+            objectColor.a = 0.5f;
+        }
+        else
+        {
+            objectColor.a = 1f;
         }
     }
     private void DisableAllMonoScripts(GameObject obj)
@@ -142,5 +166,8 @@ public class ButtonHoldSpawner : MonoBehaviour, IPointerDownHandler, IPointerUpH
         spawnedRectTransform = null;
 
         Debug.Log("Object placed.");
+
+        // Make object visible
+        objectColor.a = 1f;
     }
 }

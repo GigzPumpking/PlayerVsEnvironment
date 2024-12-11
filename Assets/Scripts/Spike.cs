@@ -18,4 +18,9 @@ public class Spike : EnemyBase
             }
         }
     }
+
+    void Update()
+    {
+        base.Update();
+    }
 }

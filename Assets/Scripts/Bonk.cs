@@ -12,6 +12,7 @@ public class Bonk : EnemyBase
     new void Update()
     {
         base.Update();
+
         HeroKnight Knight = FindFirstObjectByType<HeroKnight>();
         Rigidbody2D tmpRigidbody2D = Knight.GetComponentInParent<Rigidbody2D>();
         float tmpDist = Vector3.Distance(Knight.transform.position, transform.position);

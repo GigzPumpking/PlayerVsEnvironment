@@ -7,6 +7,8 @@ public class EnemyBase : MonoBehaviour
 
     private bool justReleased = false;
 
+    private bool isBeingDragged = false;
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -22,6 +24,7 @@ public class EnemyBase : MonoBehaviour
             {
                 justReleased = true;
                 DraggedOnPoint(DragObject.targetPos);
+                isBeingDragged = true;
             }
             else
             {
@@ -30,7 +33,19 @@ public class EnemyBase : MonoBehaviour
                     OnReleased(DragObject.dragVelocity);
                 }
                 justReleased = false;
+                isBeingDragged = false;
             }
+        }
+
+        if (isBeingDragged)
+        {
+            // Turn off collision
+            if (gameObject.GetComponent<Collider2D>().enabled)
+                gameObject.GetComponent<Collider2D>().enabled = false;
+        } else {
+            // Turn on collision
+            if (!gameObject.GetComponent<Collider2D>().enabled)
+                gameObject.GetComponent<Collider2D>().enabled = true;
         }
     }
 
@@ -45,5 +60,10 @@ public class EnemyBase : MonoBehaviour
     {
         Rigidbody2D tmpRigidbody2D = gameObject.GetComponentInParent<Rigidbody2D>();
         tmpRigidbody2D.linearVelocity = releaseVelocity * 500f;
+    }
+
+    public bool IsBeingDragged()
+    {
+        return isBeingDragged;
     }
 }
